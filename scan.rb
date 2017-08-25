@@ -1,6 +1,7 @@
 require "proxy_fetcher"
 require "rubygems"
 require "mechanize"
+require "nokogiri"
 
 def getProxyChosen(country, proxies)
   i = 0;
@@ -40,14 +41,25 @@ def getPort(proxy)
   return (port);
 end
 
+def setProxy(ip, port)
+  agent = Mechanize.new;
+  page = agent.get("http://www.netflix.com/signup/");
+  puts page.body
+  #agent.set_proxy ip, port.to_i;
+end
+
 def main()
   puts("What location do you want to use ?");
   country = getCountry();
   proxies = getProxyList();
-  proxy = getProxyChosen(country, proxies);
+  if (!(proxy = getProxyChosen(country, proxies)))
+    puts("No proxy actually found..");
+    exit;
+  end
   ip = getIpAddress(proxy);
   port = getPort(proxy);
   puts("#{ip} => #{port}");
+  setProxy(ip, port);
 end
 
 main();
